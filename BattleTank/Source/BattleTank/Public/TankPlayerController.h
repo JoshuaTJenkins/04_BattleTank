@@ -35,6 +35,6 @@ private:
 		float CrosshairXLocation = 0.5;
 		float CrosshairYLocation = 0.333333;
 
-
+		bool GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection) const;
 	
 };
