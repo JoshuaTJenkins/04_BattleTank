@@ -35,7 +35,6 @@ public:
 protected:
 	UTankAimingComponent * TankAimingComponent = nullptr;
 
-
 private:
 	// Sets default values for this pawn's properties
 	ATank();

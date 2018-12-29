@@ -32,7 +32,5 @@ private:
 
 	UTankTurret* Turret = nullptr; // turret
 	void MoveTurretTowards(FVector AimDirection);
-
-
 	
 };
