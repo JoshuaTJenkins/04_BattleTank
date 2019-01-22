@@ -18,10 +18,17 @@ class BATTLETANK_API UTankMovementComponent : public UNavMovementComponent
 
 public:
 	UFUNCTION(BlueprintCallable, Category = Setup)
-		void Initialise(UTankTracks* LeftTrackToSet, UTankTracks* RightTrackToSet);
+	void Initialise(UTankTracks* LeftTrackToSet, UTankTracks* RightTrackToSet);
 		
 	UFUNCTION(BlueprintCallable, Category = Input)
 	void IntendMoveForward(float Throw);
+
+	UFUNCTION(BlueprintCallable, Category = Input)
+	void IntendTurnRight(float Throw);
+
+	// TODO Check best protection of this method
+	virtual void RequestDirectMove(const FVector& MoveVelocity, bool bForceMaxSpeed) override;
+
 
 
 private:
