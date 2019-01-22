@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright SweatnRegret Ltd
 
 #include "TankMovementComponent.h"
 #include "TankTracks.h"
@@ -36,11 +36,13 @@ void UTankMovementComponent::RequestDirectMove(const FVector& MoveVelocity, bool
 
 	auto TankForward = GetOwner()->GetActorForwardVector().GetSafeNormal();
 	auto AIForwardIntention = MoveVelocity.GetSafeNormal();
-	auto ForwardThrow = FVector::DotProduct(TankForward, AIForwardIntention);
-	auto RightThrow = FVector::CrossProduct(TankForward, AIForwardIntention);
 
+	auto ForwardThrow = FVector::DotProduct(TankForward, AIForwardIntention);
 	IntendMoveForward(ForwardThrow);
-	IntendTurnRight(RightThrow.Z);
+
+	auto RightThrow = FVector::CrossProduct(TankForward, AIForwardIntention).Z;	
+	IntendTurnRight(RightThrow);
+	
 
 	
 
