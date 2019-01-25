@@ -13,10 +13,17 @@ UTankAimingComponent::UTankAimingComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	
-	PrimaryComponentTick.bCanEverTick = false; 
-
+	bWantsBeginPlay = true;
+	PrimaryComponentTick.bCanEverTick = true; 
 	// ...
+}
+
+
+void UTankAimingComponent::BeginPlay()
+{	
+	Super::BeginPlay();
+	// So that first fire is after initial reload
+	
 }
 
 void UTankAimingComponent::Initialise(UTankBarrel* BarrelToSet, UTankTurret* TurretToSet)
@@ -24,6 +31,30 @@ void UTankAimingComponent::Initialise(UTankBarrel* BarrelToSet, UTankTurret* Tur
 	Barrel = BarrelToSet;
 	Turret = TurretToSet;
 };
+
+void UTankAimingComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
+{	
+	if ((FPlatformTime::Seconds() - LastFireTime) < ReloadTimeInSeconds) 
+	{
+		FiringState = EFiringState::Reloading;
+	}
+	else if (IsBarrelMoving())
+	{
+		FiringState = EFiringState::Aiming;
+	}
+	else
+	{
+		FiringState = EFiringState::Locked;
+	} 
+};
+
+bool UTankAimingComponent::IsBarrelMoving()
+{
+	if (!ensure(Barrel)) { return false; }
+
+	auto BarrelForward = Barrel->GetForwardVector();
+	return !BarrelForward.Equals(AimDirection, 0.01); // vectors are equal
+}
 
 void UTankAimingComponent::AimAt(FVector HitLocation)
 {
@@ -47,10 +78,9 @@ void UTankAimingComponent::AimAt(FVector HitLocation)
 
 	if(bHaveAimSolution)
 	{
-		auto AimDirection = OutLaunchVelocity.GetSafeNormal();		
+		AimDirection = OutLaunchVelocity.GetSafeNormal();		
 		MoveBarrelTowards(AimDirection);			
 	}	
-
 
 	if (!ensure(TankAimingComponent)) { return; }
 	TankAimingComponent->AimAt(HitLocation);
@@ -72,22 +102,21 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 }
 
 void UTankAimingComponent::Fire()
-{
-	if (!ensure(Barrel)&& ProjectileBlueprint) { return; }
-	bool isReloaded = (FPlatformTime::Seconds() - LastFireTime) > ReloadTimeInSeconds;
+{	
 
-	if (isReloaded)
+	if (FiringState != EFiringState::Reloading)
 	{
-
 		//Spawn a projectile at the socket loactaion on the barrel
-
+		if (!ensure(Barrel)) { return; }
+		if (!ensure(ProjectileBlueprint)) { return; }
 		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
 			ProjectileBlueprint,
 			Barrel->GetSocketLocation(FName("Projectile")),
 			Barrel->GetSocketRotation(FName("Projectile"))
 			);
 
-		Projectile->LaunchProjectile(LaunchSpeed);
-		LastFireTime = FPlatformTime::Seconds();
+		Projectile->LaunchProjectile(LaunchSpeed);	
+
+		LastFireTime = FPlatformTime::Seconds(); //TODO Movee to begin play and see why this doesnt work there.
 	}
 }
