@@ -26,13 +26,15 @@ public:
 private:
 	UTankTracks();
 
-	virtual void BeginPlay() override;
+	virtual void BeginPlay() override;	
 
-	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
+	void ApplySidewaysForce();
 
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 
-	
+	void DriveTracks();
+
+	float CurrentThrottle = 0;
 	
 };

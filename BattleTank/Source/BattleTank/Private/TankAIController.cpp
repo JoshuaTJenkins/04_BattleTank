@@ -24,8 +24,12 @@ void ATankAIController::Tick(float DeltaTime)
 	auto AimingComponent = ControlledTank->FindComponentByClass<UTankAimingComponent>();
 	AimingComponent->AimAt(PlayerTank->GetActorLocation());
 
+	// if aim or locked then fire
+	if (AimingComponent->GetFiringState() == EFiringState::Locked) 
+	{
+		AimingComponent->Fire(); // TODO limit fire rate
+	}
 	
-	AimingComponent->Fire(); // TODO limit fire rate
 	
 }
 

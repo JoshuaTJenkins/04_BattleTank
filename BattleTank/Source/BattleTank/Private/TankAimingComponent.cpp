@@ -48,6 +48,11 @@ void UTankAimingComponent::TickComponent(float DeltaTime, enum ELevelTick TickTy
 	} 
 };
 
+EFiringState UTankAimingComponent::GetFiringState() const
+{
+	return FiringState;
+}
+
 bool UTankAimingComponent::IsBarrelMoving()
 {
 	if (!ensure(Barrel)) { return false; }
@@ -94,11 +99,19 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 	// work out difference between current barrel rotation and aim direction
 	auto BarrelRotator = Barrel->GetForwardVector().Rotation();
 	auto AimAsRotator = AimDirection.Rotation();
-	auto DeltaRotator = AimAsRotator - BarrelRotator;
-	
+	auto DeltaRotator = AimAsRotator - BarrelRotator;	
 
 		Barrel->Elevate(DeltaRotator.Pitch);
-		Turret->Rotation(DeltaRotator.Yaw);
+		//Always yaw the shortest way
+		if (FMath::Abs(DeltaRotator.Yaw) < 180)
+		{
+			Turret->Rotation(DeltaRotator.Yaw);			
+		}
+		else
+		{
+			Turret->Rotation(-DeltaRotator.Yaw);
+		}
+		
 }
 
 void UTankAimingComponent::Fire()
@@ -120,3 +133,4 @@ void UTankAimingComponent::Fire()
 		LastFireTime = FPlatformTime::Seconds(); //TODO Movee to begin play and see why this doesnt work there.
 	}
 }
+
