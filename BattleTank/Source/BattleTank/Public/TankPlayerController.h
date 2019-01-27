@@ -26,7 +26,7 @@ private:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+	virtual void SetPawn(APawn* InPawn) override;
 	virtual void BeginPlay() override;
 
 
@@ -45,6 +45,7 @@ private:
 
 		bool GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection) const;
 		bool GetLookVectorHitLocation(FVector LookDirection, FVector& HitLocation) const;
-
-	
+				
+		UFUNCTION()
+		void OnPossessedTankDeath();
 };
