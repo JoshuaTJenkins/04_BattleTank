@@ -75,7 +75,7 @@ private:
 	float ReloadTimeInSeconds = 3;
 
 	UPROPERTY(EditDefaultsOnly, category = "Firing")
-	int32 RoundsLeft = 8;
+	int32 RoundsLeft = 30;
 
 	double LastFireTime = 0;	
 
